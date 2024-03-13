@@ -1,131 +1,145 @@
 ## Sumário
 
 - [Sumário](#sumário)
-  - [Configuração do TypeORM](#configuração-do-typeorm)
-  - [Configuração do GraphQL](#configuração-do-graphql)
+- [Configuração do TypeORM](#configuração-do-typeorm)
+  - [Instale o TypeORM:](#instale-o-typeorm)
+  - [Configuração da Conexão com o Banco de Dados:](#configuração-da-conexão-com-o-banco-de-dados)
+  - [Defina Suas Entidades:](#defina-suas-entidades)
+- [Configuração do GraphQL](#configuração-do-graphql)
+  - [Instale o GraphQL:](#instale-o-graphql)
+  - [Configuração do Módulo GraphQL:](#configuração-do-módulo-graphql)
+  - [Crie Resolvers GraphQL:](#crie-resolvers-graphql)
+  - [Defina Tipos de Entidade GraphQL:](#defina-tipos-de-entidade-graphql)
 
 ---
 
-### Configuração do TypeORM
+## Configuração do TypeORM
 
 O TypeORM é uma ferramenta extremamente poderosa para trabalhar com bancos de dados relacionais em aplicações Node.js. Vamos detalhar como configurá-lo em um microsserviço NestJS.
 
-1. **Instale o TypeORM**:
-   Certifique-se de ter o TypeORM instalado no seu projeto. Se ainda não tiver instalado, use o seguinte comando:
+### Instale o TypeORM:
 
-   ```bash
-   npm install --save @nestjs/typeorm typeorm
-   ```
+Certifique-se de ter o TypeORM instalado no seu projeto. Se ainda não tiver instalado, use o seguinte comando:
 
-2. **Configuração da Conexão com o Banco de Dados**:
-   No arquivo `app.module.ts` do seu serviço, importe o módulo `TypeOrmModule` e configure a conexão com o banco de dados. Aqui está um exemplo de como isso pode ser feito:
+```bash
+npm install --save @nestjs/typeorm typeorm
+```
 
-   ```typescript
-   import { Module } from "@nestjs/common";
-   import { TypeOrmModule } from "@nestjs/typeorm";
+### Configuração da Conexão com o Banco de Dados:
 
-   @Module({
-     imports: [
-       TypeOrmModule.forRoot({
-         type: "mysql", // tipo do banco de dados (MySQL, PostgreSQL, etc.)
-         host: "localhost",
-         port: 3306,
-         username: "root",
-         password: "sua_senha",
-         database: "nome_do_banco_de_dados",
-         entities: [__dirname + "/**/*.entity{.ts,.js}"], // caminho para suas entidades
-         synchronize: true, // sincronizar as entidades com o banco de dados (apenas em ambiente de desenvolvimento)
-       }),
-     ],
-   })
-   export class AppModule {}
-   ```
+No arquivo `app.module.ts` do seu serviço, importe o módulo `TypeOrmModule` e configure a conexão com o banco de dados. Aqui está um exemplo de como isso pode ser feito:
 
-3. **Defina Suas Entidades**:
-   Crie suas entidades utilizando as classes do TypeORM. Aqui está um exemplo básico de uma entidade de usuário (`user.entity.ts`):
+```typescript
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
 
-   ```typescript
-   import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+@Module({
+  imports: [
+    TypeOrmModule.forRoot({
+      type: "mysql", // tipo do banco de dados (MySQL, PostgreSQL, etc.)
+      host: "localhost",
+      port: 3306,
+      username: "root",
+      password: "sua_senha",
+      database: "nome_do_banco_de_dados",
+      entities: [__dirname + "//*.entity{.ts,.js}"], // caminho para suas entidades
+      synchronize: true, // sincronizar as entidades com o banco de dados (apenas em ambiente de desenvolvimento)
+    }),
+  ],
+})
+export class AppModule {}
+```
 
-   @Entity()
-   export class User {
-     @PrimaryGeneratedColumn()
-     id: number;
+### Defina Suas Entidades:
 
-     @Column()
-     name: string;
+Crie suas entidades utilizando as classes do TypeORM. Aqui está um exemplo básico de uma entidade de usuário (`user.entity.ts`):
 
-     @Column()
-     email: string;
-   }
-   ```
+```typescript
+import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
 
-### Configuração do GraphQL
+@Entity()
+export class User {
+  @PrimaryGeneratedColumn()
+  id: number;
+
+  @Column()
+  name: string;
+
+  @Column()
+  email: string;
+}
+```
+
+## Configuração do GraphQL
 
 O GraphQL é uma linguagem de consulta para APIs e um tempo de execução para executar essas consultas com seus dados existentes. Vamos detalhar como configurá-lo em um microsserviço NestJS.
 
-1. **Instale o GraphQL**:
-   Certifique-se de ter o pacote `@nestjs/graphql` instalado no seu projeto. Se ainda não tiver instalado, use o seguinte comando:
+### Instale o GraphQL:
 
-   ```bash
-   npm install --save @nestjs/graphql graphql-tools graphql
-   ```
+Certifique-se de ter o pacote `@nestjs/graphql` instalado no seu projeto. Se ainda não tiver instalado, use o seguinte comando:
 
-2. **Configuração do Módulo GraphQL**:
-   No arquivo `app.module.ts` do seu serviço, importe o módulo `GraphQLModule` e configure-o. Aqui está um exemplo básico de como isso pode ser feito:
+```bash
+npm install --save @nestjs/graphql graphql-tools graphql
+```
 
-   ```typescript
-   import { Module } from "@nestjs/common";
-   import { GraphQLModule } from "@nestjs/graphql";
+### Configuração do Módulo GraphQL:
 
-   @Module({
-     imports: [
-       GraphQLModule.forRoot({
-         autoSchemaFile: true,
-       }),
-     ],
-   })
-   export class AppModule {}
-   ```
+No arquivo `app.module.ts` do seu serviço, importe o módulo `GraphQLModule` e configure-o. Aqui está um exemplo básico de como isso pode ser feito:
 
-   - `autoSchemaFile`: Este parâmetro permite que o NestJS gere automaticamente um esquema GraphQL com base nos resolvers e tipos definidos na aplicação.
+```typescript
+import { Module } from "@nestjs/common";
+import { GraphQLModule } from "@nestjs/graphql";
 
-3. **Crie Resolvers GraphQL**:
-   Para cada serviço que utiliza GraphQL, crie resolvers para suas consultas, mutações, etc. Um resolver é uma função que recebe uma requisição GraphQL e retorna os dados correspondentes. Aqui está um exemplo de um resolver de usuário:
+@Module({
+  imports: [
+    GraphQLModule.forRoot({
+      autoSchemaFile: true,
+    }),
+  ],
+})
+export class AppModule {}
+```
 
-   ```typescript
-   import { Resolver, Query } from "@nestjs/graphql";
-   import { UserService } from "./user.service";
+- `autoSchemaFile`: Este parâmetro permite que o NestJS gere automaticamente um esquema GraphQL com base nos resolvers e tipos definidos na aplicação.
 
-   @Resolver("User")
-   export class UserResolver {
-     constructor(private readonly userService: UserService) {}
+### Crie Resolvers GraphQL:
 
-     @Query("users")
-     async getUsers() {
-       return this.userService.findAll();
-     }
-   }
-   ```
+Para cada serviço que utiliza GraphQL, crie resolvers para suas consultas, mutações, etc. Um resolver é uma função que recebe uma requisição GraphQL e retorna os dados correspondentes. Aqui está um exemplo de um resolver de usuário:
 
-4. **Defina Tipos de Entidade GraphQL**:
-   Para cada entidade do TypeORM que deseja expor através do GraphQL, defina os tipos GraphQL correspondentes. Isso pode ser feito usando a anotação `@ObjectType()` do NestJS. Aqui está um exemplo de como definir um tipo de usuário:
+```typescript
+import { Resolver, Query } from "@nestjs/graphql";
+import { UserService } from "./user.service";
 
-   ```typescript
-   import { ObjectType, Field, Int } from "@nestjs/graphql";
+@Resolver("User")
+export class UserResolver {
+  constructor(private readonly userService: UserService) {}
 
-   @ObjectType()
-   export class User {
-     @Field((type) => Int)
-     id: number;
+  @Query("users")
+  async getUsers() {
+    return this.userService.findAll();
+  }
+}
+```
 
-     @Field()
-     name: string;
+### Defina Tipos de Entidade GraphQL:
 
-     @Field()
-     email: string;
-   }
-   ```
+Para cada entidade do TypeORM que deseja expor através do GraphQL, defina os tipos GraphQL correspondentes. Isso pode ser feito usando a anotação `@ObjectType()` do NestJS. Aqui está um exemplo de como definir um tipo de usuário:
 
-   - `@ObjectType()`: Esta anotação define uma classe como um tipo GraphQL.
-   - `@Field()`: Esta anotação define os campos que serão expostos no esquema GraphQL.
+```typescript
+import { ObjectType, Field, Int } from "@nestjs/graphql";
+
+@ObjectType()
+export class User {
+  @Field((type) => Int)
+  id: number;
+
+  @Field()
+  name: string;
+
+  @Field()
+  email: string;
+}
+```
+
+- `@ObjectType()`: Esta anotação define uma classe como um tipo GraphQL.
+- `@Field()`: Esta anotação define os campos que serão expostos no esquema GraphQL.
