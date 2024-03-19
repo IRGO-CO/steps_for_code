@@ -43,11 +43,12 @@ O `README.md` é crucial para explicar o propósito do seu projeto, como configu
 ```bash
 touch README.md
 ```
+
 !!!- Escreva uma descrição simples, requisitos, instruções de instalação e uso.
 
 ### 5. Adição de Arquivos ao Staging Area
 
-Adicione suas mudanças ao staging area do Git:
+**Adicione** suas mudanças ao staging area do Git:
 
 ```bash
 git add .

@@ -96,7 +96,7 @@ nest g app microservice-name
 
 Após adicionar um ou mais microservices, a estrutura do seu projeto terá a seguinte aparência:
 
-```
+```typescript
 workspace-name/
 ├── apps/
 │   ├── microservice-name/
