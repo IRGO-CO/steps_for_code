@@ -438,15 +438,18 @@ O RabbitMQ é um middleware de mensagens de código aberto que funciona como um 
 No contexto dos microserviços "user" e "auth", o RabbitMQ será utilizado para facilitar a comunicação assíncrona entre eles. Vamos detalhar o processo:
 
 1. **Remetente (Produtor) - Microserviço "User"**:
+
    - Quando o microserviço "User" deseja enviar uma mensagem (por exemplo, obter usuários), ele cria um cliente RabbitMQ usando o pacote `@nestjs/microservices`.
    - O cliente RabbitMQ é configurado para se conectar ao servidor RabbitMQ e publicar mensagens na fila "user_queue".
    - Ao chamar o método `this.client.send('users', {})` (no exemplo, para obter usuários), o microserviço "User" envia uma mensagem para a fila "user_queue" com o padrão `'users'`.
 
 2. **Fila RabbitMQ ("user_queue")**:
+
    - A fila "user_queue" é criada no servidor RabbitMQ e aguarda a chegada de mensagens enviadas pelo microserviço "User".
    - Quando uma mensagem é publicada na fila "user_queue", o RabbitMQ a armazena temporariamente até que um consumidor a processe.
 
 3. **Receptor (Consumidor) - Microserviço "Auth"**:
+
    - O microserviço "Auth" atua como um consumidor de mensagens da fila "user_queue".
    - Ele cria um cliente RabbitMQ semelhante ao do microserviço "User", configurado para se conectar ao servidor RabbitMQ e consumir mensagens da fila "user_queue".
    - Ao inicializar, o microserviço "Auth" começa a ouvir a fila "user_queue" e espera a chegada de novas mensagens.
@@ -458,3 +461,31 @@ No contexto dos microserviços "user" e "auth", o RabbitMQ será utilizado para 
    - No caso de uma solicitação para obter usuários, nenhum payload adicional foi fornecido (`{}`), mas poderia incluir dados relevantes para a consulta, como filtros ou parâmetros de paginação.
    - O microserviço "Auth" recebe essa mensagem e a processa, retornando a resposta apropriada para o microserviço "User", se necessário.
 
+Vamos expandir nosso exemplo para incluir o processo de login, utilizando GraphQL para comunicação entre os microserviços "users" e "auth".
+
+1. **Solicitação de Login para o Microserviço "Auth"**:
+
+   - O cliente (front-end, outro serviço, etc.) envia uma solicitação GraphQL para o endpoint `/graphql` no microserviço "Auth" com uma mutação para realizar o login. Por exemplo:
+
+     ```graphql
+     mutation {
+       login(input: { username: "example_user", password: "password123" }) {
+         token
+       }
+     }
+     ```
+
+   - O microserviço "Auth" recebe a solicitação GraphQL e executa a mutação para autenticar o usuário com as credenciais fornecidas.
+   - Após a autenticação bem-sucedida, o microserviço "Auth" gera um token de autenticação para o usuário e o retorna para o cliente como resposta à solicitação de login.
+
+2. **Processo de Autenticação no Microserviço "Auth"**:
+
+   - O microserviço "Auth" recebe a solicitação de login e verifica as credenciais do usuário em sua base de dados de autenticação.
+   - Se as credenciais forem válidas, o microserviço "Auth" gera um token de autenticação para o usuário.
+   - O token é normalmente um JWT (JSON Web Token) que contém informações sobre o usuário e é assinado digitalmente para garantir a sua integridade.
+
+3. **Resposta para o Cliente**:
+   - O microserviço "Auth" retorna o token de autenticação para o cliente como resposta à solicitação de login.
+   - O cliente pode usar esse token para autenticar futuras solicitações ao sistema.
+
+Com essa abordagem, a responsabilidade pela autenticação é centralizada no microserviço "Auth", permitindo maior controle e segurança no processo de login. O microserviço "Users" pode se concentrar exclusivamente na gestão de usuários, enquanto o microserviço "Auth" cuida da autenticação e autorização. Isso resulta em um sistema mais desacoplado e escalável, onde cada microserviço tem uma função clara e definida.
